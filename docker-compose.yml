@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: Ordering
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: examplepassfromenv
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  api:
+    build: ./backend/
+    container_name: api
+    depends_on:
+      - postgres
+    environment:
+      - TZ=Europe/Moscow
+    networks:
+      - app-network
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend/
+    container_name: frontend
+    depends_on:
+      - api
+    networks:
+      - app-network
+    ports:
+      - "80:80"
+
+networks:
+  app-network:
+    driver: bridge
